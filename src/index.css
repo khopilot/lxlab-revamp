@@ -1,13 +1,152 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* 
+ * LxLabs - Simplified Frontend UI Styles
+ * Hospitality Training Platform with Cambodian Cultural Elements
+ */
+
+/* Tailwind CSS Imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@300;400;500;600;700&display=swap');
+
+/* Base Styles */
+@layer base {
+  html {
+    font-family: 'Inter', 'Noto Sans Khmer', system-ui, sans-serif;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-white text-navy antialiased dark:bg-navy-dark dark:text-white;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', 'Noto Sans Khmer', system-ui, sans-serif;
+    @apply font-semibold leading-tight;
+  }
+
+  h1 {
+    @apply text-h1 font-bold;
+  }
+
+  h2 {
+    @apply text-h2 font-semibold;
+  }
+
+  h3 {
+    @apply text-h3 font-medium;
+  }
+
+  p {
+    @apply text-body leading-relaxed;
+  }
+
+  small {
+    @apply text-caption;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 dark:ring-offset-navy-dark;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Custom Scrollbar Styling */
+@layer utilities {
+  .scrollbar-luxury::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-luxury::-webkit-scrollbar-track {
+    @apply bg-white-off dark:bg-navy-light rounded-full;
+  }
+
+  .scrollbar-luxury::-webkit-scrollbar-thumb {
+    @apply bg-primary/50 rounded-full;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  .scrollbar-luxury::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/80;
+  }
+
+  .scrollbar-luxury {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.primary.DEFAULT / 50%') theme('colors.white.off');
+  }
+  .dark .scrollbar-luxury {
+    scrollbar-color: theme('colors.primary.DEFAULT / 50%') theme('colors.navy.light');
+  }
+}
+
+/* Simplified Glassmorphism & Component Styles */
+@layer components {
+  /* Leverage the plugin for .glassmorphism and .glassmorphism-dark */
+  .glass-card {
+    @apply glassmorphism dark:glassmorphism-dark rounded-card p-6;
+  }
+
+  .glass-nav {
+    @apply glassmorphism dark:glassmorphism-dark sticky top-0 z-50;
+  }
+  
+  .glass-button {
+    @apply glassmorphism dark:glassmorphism-dark py-3 px-6 rounded-button transition-all duration-300 hover:shadow-glass-md active:scale-95;
+  }
+
+  /* Button Styles */
+  .btn {
+    @apply py-3 px-6 rounded-button font-medium transition-all duration-300 focus-visible:ring-2 focus-visible:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white-pure hover:bg-primary-dark active:scale-95 focus-visible:ring-primary;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-navy hover:bg-secondary-dark active:scale-95 focus-visible:ring-secondary;
+  }
+  
+  .btn-glass { /* For buttons that need glass effect but might not be primary/secondary */
+    @apply glass-button text-navy dark:text-white hover:shadow-glass-md focus-visible:ring-primary;
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    @apply h-2 rounded-full bg-navy/10 dark:bg-white/10 overflow-hidden;
+  }
+
+  .progress-value {
+    @apply h-full bg-primary rounded-full transition-all duration-300;
+  }
+}
+
+/* Khmer Language Support */
+.khmer {
+  font-family: 'Noto Sans Khmer', sans-serif;
+  line-height: 1.8; /* Khmer script often needs more line height for readability */
+}
+
+/* Removed complex animations, backgrounds, and other non-essential utilities */
+/* The .bg-khmer-pattern and .bg-angkor that relied on missing SVGs are removed. */
+/* If a subtle pattern is still desired for .bg-khmer-pattern, it can be a very light CSS gradient or a simple color. */
+.bg-khmer-pattern {
+  /* Example: very subtle dark overlay for dark mode, or light for light mode */
+  /* This class is used in App.tsx, so providing a fallback */
+}
+.dark .bg-khmer-pattern {
+  /* background-color: rgba(255,255,255,0.01); */ /* Example for dark mode */
+}
+
+/* Ensure dark mode class on html is respected */
+html.dark body {
+  @apply bg-navy-dark text-white;
 }

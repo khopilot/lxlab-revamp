@@ -1,10 +1,52 @@
-# Getting Started with Create React App
+# LXLabs - Hospitality Learning Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based learning management system designed for hospitality industry training, featuring bilingual support (English/Khmer) and comprehensive analytics.
+
+## Features
+
+- **Bilingual Interface**: Full support for English and Khmer languages
+- **Course Management**: Browse, enroll, and track progress in hospitality courses
+- **Analytics Dashboard**: Comprehensive progress tracking with charts and insights
+- **Flashcard System**: Interactive vocabulary learning
+- **Dark/Light Mode**: Toggle between themes
+- **Responsive Design**: Works on desktop and mobile devices
+
+## Recent Bug Fixes
+
+The following TypeScript compilation issues have been resolved:
+
+1. **Missing Icon Imports**: Added `Flame` and `Layers` icons from `lucide-react` to `AnalyticsPage.tsx`
+2. **Data Structure Mismatch**: Fixed BarChart component data transformation in `AnalyticsPage.tsx`
+3. **Type Mismatch**: Fixed `onSelectCourse` prop type mismatch in `CoursesPage.tsx` by creating a proper handler function
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (version 16 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd lxlabs
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm start
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Available Scripts
-
-In the project directory, you can run:
 
 ### `npm start`
 
@@ -27,17 +69,32 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `npx tsc --noEmit`
 
-### `npm run eject`
+Runs TypeScript compilation check without emitting files to verify there are no type errors.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Project Structure
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+src/
+├── components/          # React components
+│   ├── AnalyticsPage.tsx    # Progress tracking and analytics
+│   ├── CoursesPage.tsx      # Course browsing and enrollment
+│   ├── FlashcardSystem.tsx  # Vocabulary learning system
+│   └── ...
+├── App.tsx             # Main application component
+├── index.tsx           # Application entry point
+└── index.css           # Global styles with Tailwind CSS
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Technologies Used
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- **React 19.1.0** - Frontend framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling framework
+- **Framer Motion** - Animations
+- **Lucide React** - Icon library
+- **Radix UI** - Accessible UI components
 
 ## Learn More
 
