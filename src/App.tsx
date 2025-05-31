@@ -151,14 +151,38 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 768);
+      const newIsDesktop = window.innerWidth >= 768;
+      setIsDesktop(newIsDesktop);
+      if (newIsDesktop) {
+        setMobileMenuOpen(false);
+      }
     };
-    window.addEventListener('resize', handleResize);
-    // Call handler right away so state is updated with initial window size
-    handleResize(); 
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    // Prevent body scroll when mobile menu is open
+    if (mobileMenuOpen && !isDesktop) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    // Call handler right away so state is updated with initial window size
+    handleResize();
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.body.style.overflow = 'unset'; // Clean up on unmount
+    };
+  }, [mobileMenuOpen, isDesktop]);
 
   // Splash Screen Effect
   useEffect(() => {
@@ -222,30 +246,19 @@ const App: React.FC = () => {
     setMobileMenuOpen(false);
   };
   
-  // Sidebar Component
+  // Sidebar Component (Desktop Only)
   const Sidebar: React.FC = () => {
     const topNavItems = navigationItems.filter(item => !item.isBottom);
     const bottomNavItems = navigationItems.filter(item => item.isBottom);
 
     return (
-      <motion.aside 
-        className={`fixed inset-y-0 left-0 z-50 w-64 ${darkMode ? 'bg-navy-dark border-r border-navy-light' : 'bg-white border-r border-gray-200'} 
-                   md:relative md:shadow-lg`}
-        initial={{ x: isDesktop ? 0 : '-100%'}}
-        animate={{ x: isDesktop ? 0 : (mobileMenuOpen ? 0 : '-100%') }}
-        transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
+      <aside 
+        className={`w-64 ${darkMode ? 'bg-navy-dark border-r border-navy-light' : 'bg-white border-r border-gray-200'} shadow-lg`}
       >
         <div className="flex flex-col h-full">
-          <div className={`p-4 border-b ${darkMode ? 'border-navy-light' : 'border-gray-200'} flex items-center justify-between`}>
-            <div className="flex items-center">
-              <motion.div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl mr-2">Lx</motion.div>
-              <span className={`font-bold text-xl ${darkMode ? 'text-white' : 'text-navy'}`}>LxLabs</span>
-            </div>
-            {!isDesktop && (
-                <button onClick={() => setMobileMenuOpen(false)} className="p-1">
-                    <X size={20} />
-                </button>
-            )}
+          <div className={`p-4 border-b ${darkMode ? 'border-navy-light' : 'border-gray-200'} flex items-center`}>
+            <motion.div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl mr-2">Lx</motion.div>
+            <span className={`font-bold text-xl ${darkMode ? 'text-white' : 'text-navy'}`}>LxLabs</span>
           </div>
           <nav className="flex-grow p-3 space-y-1 overflow-y-auto scrollbar-luxury">
             {topNavItems.map(item => (
@@ -278,7 +291,7 @@ const App: React.FC = () => {
             ))}
           </div>
         </div>
-      </motion.aside>
+      </aside>
     );
   };
   
@@ -287,7 +300,10 @@ const App: React.FC = () => {
     <header className={`p-3 border-b ${darkMode ? 'bg-navy border-navy-light' : 'bg-gray-50 border-gray-200'} flex items-center justify-between sticky top-0 z-40`}>
       <div className="flex items-center">
         {!isDesktop && (
-            <button onClick={() => setMobileMenuOpen(true)} className="p-2 mr-2 rounded hover:bg-gray-200 dark:hover:bg-navy-light">
+            <button 
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 mr-2 rounded hover:bg-gray-200 dark:hover:bg-navy-light"
+            >
                 <Menu size={22} />
             </button>
         )}
@@ -567,13 +583,85 @@ const App: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Sidebar />
-          {mobileMenuOpen && !isDesktop && ( 
-            <div 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden" 
-            ></div>
+          {/* Desktop Sidebar */}
+          {isDesktop && <Sidebar />}
+          
+          {/* Mobile Menu Overlay */}
+          {!isDesktop && (
+            <AnimatePresence>
+              {mobileMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="fixed inset-0 z-50 md:hidden"
+                >
+                  {/* Backdrop */}
+                  <div 
+                    className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  
+                  {/* Sidebar */}
+                  <motion.div
+                    initial={{ x: '-100%' }}
+                    animate={{ x: 0 }}
+                    exit={{ x: '-100%' }}
+                    transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
+                    className={`relative w-64 h-full ${darkMode ? 'bg-navy-dark border-r border-navy-light' : 'bg-white border-r border-gray-200'} shadow-lg`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex flex-col h-full">
+                      <div className={`p-4 border-b ${darkMode ? 'border-navy-light' : 'border-gray-200'} flex items-center justify-between`}>
+                        <div className="flex items-center">
+                          <motion.div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl mr-2">Lx</motion.div>
+                          <span className={`font-bold text-xl ${darkMode ? 'text-white' : 'text-navy'}`}>LxLabs</span>
+                        </div>
+                        <button 
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="p-1 hover:bg-gray-200 dark:hover:bg-navy-light rounded"
+                        >
+                          <X size={20} />
+                        </button>
+                      </div>
+                      <nav className="flex-grow p-3 space-y-1 overflow-y-auto scrollbar-luxury">
+                        {navigationItems.filter(item => !item.isBottom).map(item => (
+                          <button
+                            key={item.key}
+                            onClick={() => handleNavClick(item.key)}
+                            className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors duration-200
+                                        ${activeSection === item.key 
+                                          ? (darkMode ? 'bg-primary/20 text-primary-light' : 'bg-primary/10 text-primary-dark font-medium') 
+                                          : (darkMode ? 'hover:bg-navy-light text-gray-300 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900')}`}
+                          >
+                            <item.icon size={20} className={`${activeSection === item.key ? (darkMode ? 'text-primary-light' : 'text-primary-dark') : ''}`} />
+                            <span className="text-sm">{language === 'en' ? item.label : item.labelKhmer}</span>
+                          </button>
+                        ))}
+                      </nav>
+                      <div className={`p-3 border-t ${darkMode ? 'border-navy-light' : 'border-gray-200'} space-y-1`}>
+                        {navigationItems.filter(item => item.isBottom).map(item => (
+                          <button
+                            key={item.key}
+                            onClick={() => handleNavClick(item.key)}
+                            className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors duration-200
+                                        ${activeSection === item.key 
+                                          ? (darkMode ? 'bg-primary/20 text-primary-light' : 'bg-primary/10 text-primary-dark font-medium') 
+                                          : (darkMode ? 'hover:bg-navy-light text-gray-300 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900')}`}
+                          >
+                            <item.icon size={20} className={`${activeSection === item.key ? (darkMode ? 'text-primary-light' : 'text-primary-dark') : ''}`} />
+                            <span className="text-sm">{language === 'en' ? item.label : item.labelKhmer}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           )}
+          
           <div className="flex-1 flex flex-col overflow-hidden">
             <Header />
             <main className="flex-1 overflow-y-auto bg-transparent">
